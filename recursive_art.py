@@ -11,14 +11,11 @@ import math
 
 def build_random_function(min_depth, max_depth):
     """ Builds a random function of depth at least min_depth and depth
-        at most max_depth (see assignment writeup for definition of depth
-        in this context)
+        at most max_depth
 
         min_depth: the minimum depth of the random function
         max_depth: the maximum depth of the random function
         returns: the randomly generated function represented as a nested list
-                 (see assignment writeup for details on the representation of
-                 these functions)
 
 	sometimes the doctests will fail (expected x, got y | expected y, got x) because 
 	the function randomly chooses either 0 and 1, and will then pick either x or y depending on that
@@ -28,21 +25,15 @@ def build_random_function(min_depth, max_depth):
     """
     build_blocks = ["prod","avg","cos_pi","sin_pi","arctan_pi","circle","x","y"]
 
-    if max_depth <= 0:
+    if (max_depth <= 0) or (min_depth <=0):
     	random1 = random.randint(0,1)
     	if random1 == 0:
     		return "x"
     	elif random1 == 1:
     		return "y"
-    elif min_depth <= 0:
-    	random2 = random.randint(0,1)
-    	if random2 == 0:
-    		return "x"
-    	elif random2 == 1:
-    		return "y"
     else:
     	brf = build_random_function(min_depth - 1, max_depth - 1)
-    	index = random.randint(0,5)
+    	index = random.randint(0,7)
     	if index <= 5:
     		return [build_blocks[index], brf, brf]
     	if index >= 6:
@@ -75,25 +66,37 @@ def evaluate_random_function(f, x, y):
         5
     """
     if f[0] == "x":
-    	return x
+        return x
     elif f[0] == "y":
-    	return y
-    elif f[0] == "prod":
-    	return evaluate_random_function(f[1], x, y) * evaluate_random_function(f[2], x, y)
-    elif f[0] == "avg":
-    	return 0.5 * (evaluate_random_function(f[1], x, y) + evaluate_random_function(f[2], x, y))
-    elif f[0] == "cos_pi":
-    	return math.cos(math.pi * evaluate_random_function(f[1], x, y))
+        return y
+    elif f[0] == "circle":
+        return x**2 + y**2 
+
+    # evalutes random function if it has an "x" argument
+    # used for following functions
+    one = evaluate_random_function(f[1], x, y)
+
+    if f[0] == "cos_pi":
+        return math.cos(math.pi * one)
     elif f[0] == "sin_pi":
-    	return math.sin(math.pi * evaluate_random_function(f[1], x, y))
+        return math.sin(math.pi * one)
     elif f[0] == "arctan_pi":
-    	return math.atan(math.pi * evaluate_random_function(f[1], x, y))
+        return math.atan(math.pi * one)
+    
+    # evaluates random function if it has an "x" and a "y" argument
+    # used for the following functions
+    two = evaluate_random_function(f[2], x, y)
+
+    if f[0] == "prod":
+        return one * two
+    elif f[0] == "avg":
+        return 0.5 * (one + two) 
+        
     #elif f[0] == "cot_pi":
     	#return 1 / (math.tan(math.pi * evaluate_random_function(f[1], x, y)))
     #elif f[0] == "squared": 
     	#return (evaluate_random_function(f[1], x, y))**2 + (evaluate_random_function(f[2], x, y))**2
-    elif f[0] == "circle":
-    	return x**2 + y**2
+
 
 def remap_interval(val,
                    input_interval_start,                   
@@ -203,7 +206,7 @@ if __name__ == '__main__':
     doctest.testmod()
 
     # Create some computational art!
-    generate_art("myart40.png")
+    generate_art("myart51.png")
 
     # Test that PIL is installed correctly
     # test_image("noise.png")
